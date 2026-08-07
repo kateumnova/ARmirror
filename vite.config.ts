@@ -1,14 +1,20 @@
 // vite.config.ts
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { VitePWA } from 'vite-plugin-pwa'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  base: '/ARmirror/',
+
   plugins: [
     react(),
+
     VitePWA({
       registerType: 'autoUpdate',
-      devOptions: { enabled: true },
+      devOptions: {
+        enabled: true,
+      },
+
       workbox: {
         runtimeCaching: [
           {
@@ -18,22 +24,26 @@ export default defineConfig({
               cacheName: 'camera-kit-assets',
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 24 * 60 * 60 * 7 // 1 week
+                maxAgeSeconds: 60 * 60 * 24 * 7,
               },
-              cacheableResponse: { statuses: [0, 200] }
-            }
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
           },
+
           {
             urlPattern: /^https:\/\/.*\.snapar\.com/,
             handler: 'StaleWhileRevalidate',
             options: {
               cacheName: 'snapar-api',
-              expiration: { maxAgeSeconds: 60 * 60 } // 1 hour
-            }
-          }
-        ]
-      }
-    })
+              expiration: {
+                maxAgeSeconds: 60 * 60,
+              },
+            },
+          },
+        ],
+      },
+    }),
   ],
-  base: '/TestViteTest/'
-})
+});
