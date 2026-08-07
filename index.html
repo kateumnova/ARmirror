@@ -7,131 +7,160 @@
     <title>artest</title>
 
     <style>
-/* Add these CSS rules */
-html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
-#canvas { display: block; width: 100vw; height: 100vh;   z-index: 1; }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
 
-/* Fixed bottom-right button */
-.help-button {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
-  background: rgb(255, 255, 255);
-  z-index: 1000;
-  border: none;
-  border-radius: 50%;
-  font-size: 24px;
-  font-weight: bold;
-  color: #505050;
-  cursor: pointer;
-  z-index: 9999;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+      #canvas {
+        display: block;
+        width: 100vw;
+        height: 100vh;
+        z-index: 1;
+      }
 
-/* Full-screen popup */
-.popup {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.6);
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1vh; /* 10% screen height padding */
-}
+      /*
+        Optional privacy policy button.
+        This button appears in the bottom-right corner.
+        Keep this section if you want to offer visitors
+        access to the privacy policy or instructions.
+      */
+      .help-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        background: rgb(255, 255, 255);
+        z-index: 9999;
+        border: none;
+        border-radius: 50%;
+        font-size: 24px;
+        font-weight: bold;
+        color: #505050;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-.popup.hidden {
-  display: none;
-}
+      /*
+        Optional full-screen privacy policy popup.
+        This popup is opened by the button above.
+      */
+      .popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.6);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1vh;
+      }
 
-.popup-content {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 12px;
-  width: 100%;
-  max-width: 90vw;
-  max-height: 80vh;
-  padding: 2rem;
-  position: relative;
-  overflow-y: auto;
-  backdrop-filter: blur(10px);
-}
+      .popup.hidden {
+        display: none;
+      }
 
-.close-btn {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-  background: none;
-  border: none;
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
-  color: #666;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-}
+      .popup-content {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 12px;
+        width: 100%;
+        max-width: 90vw;
+        max-height: 80vh;
+        padding: 2rem;
+        position: relative;
+        overflow-y: auto;
+        backdrop-filter: blur(10px);
+      }
 
-.close-btn:hover {
-  background: rgb(182, 182, 182);
-  color: #000;
-}
+      .close-btn {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        background: none;
+        border: none;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        color: #666;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+      }
 
+      .close-btn:hover {
+        background: rgb(182, 182, 182);
+        color: #000;
+      }
+    </style>
 
-
-</style>
-
-<meta
-  http-equiv="Content-Security-Policy"
-  content="
-    default-src 'self';
-    script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' https://cf-st.sc-cdn.net https://bolt-gcdn.sc-cdn.net blob:;
-    connect-src 'self' https://*.snapar.com https://cf-st.sc-cdn.net https://bolt-gcdn.sc-cdn.net https://*.snapchat.com;
-    img-src 'self' data: https:;
-    style-src 'self' 'unsafe-inline';
-    media-src 'self' blob: https:;
-    worker-src 'self' blob: https://cf-st.sc-cdn.net https://bolt-gcdn.sc-cdn.net;
-  "
->
-
-
-
-
-
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self';
+        script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' https://cf-st.sc-cdn.net https://bolt-gcdn.sc-cdn.net blob:;
+        connect-src 'self' https://*.snapar.com https://cf-st.sc-cdn.net https://bolt-gcdn.sc-cdn.net https://*.snapchat.com;
+        img-src 'self'  https:;
+        style-src 'self' 'unsafe-inline';
+        media-src 'self' blob: https:;
+        worker-src 'self' blob: https://cf-st.sc-cdn.net https://bolt-gcdn.sc-cdn.net;
+      "
+    />
   </head>
+
   <body>
-    <canvas id = "canvas"></canvas>
+    <canvas id="canvas"></canvas>
 
-<!-- Floating button (bottom-right) -->
-  <button id="helpButton" class="help-button">?</button>
+    <!--
+      Optional privacy policy button.
+      This button opens the privacy policy popup.
+      Remove or comment out this button if you do not want
+      to display a privacy policy or instruction panel.
+    -->
+    <button
+      id="helpButton"
+      class="help-button"
+      type="button"
+      aria-label="Open privacy policy"
+    >
+      ?
+    </button>
 
-<!-- Full-screen popup (hidden by default) -->
-<div id="helpPopup" class="popup hidden">
-  <div class="popup-content">
-    <button id="closeBtn" class="close-btn">&times;</button>
-    <div class="popup-text">
-      Your help/instruction text here
+    <!--
+      Optional privacy policy popup.
+      The privacy policy text is inserted into .popup-text
+      by main.ts using the privacyText variable.
+    -->
+    <div id="helpPopup" class="popup hidden">
+      <div class="popup-content">
+        <button
+          id="closeBtn"
+          class="close-btn"
+          type="button"
+          aria-label="Close privacy policy"
+        >
+          &times;
+        </button>
+
+        <div class="popup-text">
+          Your help/instruction text here
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-    <div className="popup-text">
-      Your help/instruction text here
-    </div>
-  </div>
-</div>
 
-
-    <script type="module" src="/src/main.ts">
-    </script>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
