@@ -30,7 +30,7 @@ await session.play();
 // Lens ID and group ID: My Lenses (https://my-lenses.snapchat.com/) > Lens Scheduler.
 // First value: Lens ID. Second value: Lens Group ID.
 // These IDs may differ between personal profiles and lenses.
-const lens = await cameraKit.lensRepository.loadLens('419e266d-7666-4622-af8e-15d392d478d0','e24454ca-17c1-47c2-ad64-1db72a7b7fd5');
+const lens = await cameraKit.lensRepository.loadLens('419e266d-7666-4622-af8e-15d392d478d0','4420b795-87ac-48d9-8dad-ad0416ec12c1');
 await session.applyLens(lens);
 
 }) ();
