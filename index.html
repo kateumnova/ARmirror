@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>artest</title>
+    <title>ARmirror</title>
 
     <style>
       html,
@@ -14,6 +14,7 @@
         width: 100%;
         height: 100%;
         overflow: hidden;
+        background: #000;
       }
 
       #canvas {
@@ -24,10 +25,8 @@
       }
 
       /*
-        Optional privacy policy button.
-        This button appears in the bottom-right corner.
-        Keep this section if you want to offer visitors
-        access to the privacy policy or instructions.
+        Privacy/help button styles retained but inactive because the matching
+        HTML below is commented out for kiosk mode.
       */
       .help-button {
         position: fixed;
@@ -50,8 +49,8 @@
       }
 
       /*
-        Optional full-screen privacy policy popup.
-        This popup is opened by the button above.
+        Privacy popup styles retained but inactive because the matching
+        HTML below is commented out for kiosk mode.
       */
       .popup {
         position: fixed;
@@ -113,7 +112,7 @@
         default-src 'self';
         script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' https://cf-st.sc-cdn.net https://bolt-gcdn.sc-cdn.net blob:;
         connect-src 'self' https://*.snapar.com https://cf-st.sc-cdn.net https://bolt-gcdn.sc-cdn.net https://*.snapchat.com;
-        img-src 'self'  https:;
+        img-src 'self' https:;
         style-src 'self' 'unsafe-inline';
         media-src 'self' blob: https:;
         worker-src 'self' blob: https://cf-st.sc-cdn.net https://bolt-gcdn.sc-cdn.net;
@@ -122,44 +121,38 @@
   </head>
 
   <body>
+    <!-- Camera Kit renders the AR mirror into this canvas. -->
     <canvas id="canvas"></canvas>
 
     <!--
-      Optional privacy policy button.
-      This button opens the privacy policy popup.
-      Remove or comment out this button if you do not want
-      to display a privacy policy or instruction panel.
-    -->
-    <button
-      id="helpButton"
-      class="help-button"
-      type="button"
-      aria-label="Open privacy policy"
-    >
-      ?
-    </button>
+      Privacy/help UI disabled for the exhibition kiosk.
 
-    <!--
-      Optional privacy policy popup.
-      The privacy policy text is inserted into .popup-text
-      by main.ts using the privacyText variable.
-    -->
-    <div id="helpPopup" class="popup hidden">
-      <div class="popup-content">
-        <button
-          id="closeBtn"
-          class="close-btn"
-          type="button"
-          aria-label="Close privacy policy"
-        >
-          &times;
-        </button>
+      <button
+        id="helpButton"
+        class="help-button"
+        type="button"
+        aria-label="Open privacy policy"
+      >
+        ?
+      </button>
 
-        <div class="popup-text">
-          Your help/instruction text here
+      <div id="helpPopup" class="popup hidden">
+        <div class="popup-content">
+          <button
+            id="closeBtn"
+            class="close-btn"
+            type="button"
+            aria-label="Close privacy policy"
+          >
+            &times;
+          </button>
+
+          <div class="popup-text">
+            Your help/instruction text here
+          </div>
         </div>
       </div>
-    </div>
+    -->
 
     <script type="module" src="/src/main.ts"></script>
   </body>
