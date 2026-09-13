@@ -1,8 +1,11 @@
 import {bootstrapCameraKit} from "@snap/camera-kit";
 import { privacyText } from './privacy-text.ts';
+
 (async function (){
   const cameraKit = await bootstrapCameraKit ({
-apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzY1ODA1NTEyLCJzdWIiOiIxZGNiNTc5Ny1lMjVlLTQxMzctOTUwMS1iMDVmMTliMTBmMjZ-UFJPRFVDVElPTn42ZWNkNzZiNy0zMWNlLTQ5MGItYWI0YS02ODViNDRiZTdjMmYifQ.W9Bn9zr4Ts933wK59r5d4zOQ5ihsiOg4EhAz0YmdkIE'
+    // Production token: My Lenses (https://my-lenses.snapchat.com/) > Apps.
+    // Replace with the production token from your own profile if needed.
+    apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzY1ODA1NTEyLCJzdWIiOiIxZGNiNTc5Ny1lMjVlLTQxMzctOTUwMS1iMDVmMTliMTBmMjZ-UFJPRFVDVElPTn42ZWNkNzZiNy0zMWNlLTQ5MGItYWI0YS02ODViNDRiZTdjMmYifQ.W9Bn9zr4Ts933wK59r5d4zOQ5ihsiOg4EhAz0YmdkIE'
   });
 
 const liveRenderTarget = document.getElementById('canvas') as HTMLCanvasElement;
@@ -24,7 +27,10 @@ const mediaStream = await navigator.mediaDevices.getUserMedia({
 await session.setSource(mediaStream);
 await session.play();
 
-const lens = await cameraKit.lensRepository.loadLens('73f1a0cc-ffd9-4903-a732-aa5714d3fb0f','4420b795-87ac-48d9-8dad-ad0416ec12c1');
+// Lens ID and group ID: My Lenses (https://my-lenses.snapchat.com/) > Lens Scheduler.
+// First value: Lens ID. Second value: Lens Group ID.
+// These IDs may differ between personal profiles and lenses.
+const lens = await cameraKit.lensRepository.loadLens('419e266d-7666-4622-af8e-15d392d478d0','e24454ca-17c1-47c2-ad64-1db72a7b7fd5');
 await session.applyLens(lens);
 
 }) ();
