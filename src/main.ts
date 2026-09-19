@@ -1,4 +1,4 @@
-// Crisp version + mirrored camera + fixed crop (lens text NOT mirrored)
+// Crisp + mirrored camera + overscan via wrapper (hides clamp)
 
 import {
   bootstrapCameraKit,
@@ -14,38 +14,36 @@ import { privacyText } from "./privacy-text.ts";
         "eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzY1ODA1NTEyLCJzdWIiOiIxZGNiNTc5Ny1lMjVlLTQxMzctOTUwMS1iMDVmMTliMTBmMjZ-UFJPRFVDVElPTn42ZWNkNzZiNy0zMWNlLTQ5MGItYWI0YS02ODViNDRiZTdjMmYifQ.W9Bn9zr4Ts933wK59r5d4zOQ5ihsiOg4EhAz0YmdkIE",
     });
 
-    const liveRenderTarget = document.getElementById(
-      "canvas"
-    ) as HTMLCanvasElement;
+    const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+    const wrapper = document.getElementById("canvasWrapper") as HTMLElement;
 
-    if (!liveRenderTarget) {
-      throw new Error('Missing <canvas id="canvas"> in index.html.');
+    if (!canvas || !wrapper) {
+      throw new Error('Missing <canvas id="canvas"> or #canvasWrapper in index.html.');
     }
 
-    // Retina canvas: set once, before Camera Kit takes ownership.
+    // Use the wrapper's size for the canvas buffer (includes overscan).
     const dpr = window.devicePixelRatio || 1;
-    liveRenderTarget.width = Math.round(window.innerWidth * dpr);
-    liveRenderTarget.height = Math.round(window.innerHeight * dpr);
+    const bufferWidth = Math.round(wrapper.clientWidth * dpr);
+    const bufferHeight = Math.round(wrapper.clientHeight * dpr);
 
-    // CSS controls display size; do not change .width/.height later.
-    liveRenderTarget.style.width = "100vw";
-    liveRenderTarget.style.height = "100vh";
+    canvas.width = bufferWidth;
+    canvas.height = bufferHeight;
 
-    const session = await cameraKit.createSession({ liveRenderTarget });
+    // Canvas fills the wrapper via CSS; do not change .width/.height later.
+    const session = await cameraKit.createSession({ liveRenderTarget: canvas });
 
-    // Get camera stream as in your working version.
+    const aspect = bufferWidth / bufferHeight;
+
     const mediaStream = await navigator.mediaDevices.getUserMedia({
       video: {
         width: { ideal: 1920 },
         height: { ideal: 1080 },
+        aspectRatio: { ideal: aspect },
         facingMode: "user",
       },
       audio: false,
     });
 
-    // Wrap the MediaStream in a CameraKitSource with:
-    // - horizontal mirror (camera only),
-    // - explicit user camera type for correct aspect/crop.
     const source = createMediaStreamSource(mediaStream, {
       transform: Transform2D.MirrorX,
       cameraType: "user",
@@ -64,11 +62,12 @@ import { privacyText } from "./privacy-text.ts";
     const track = mediaStream.getVideoTracks()[0];
     console.log("Camera settings:", track.getSettings());
     console.log("Canvas buffer:", {
-      width: liveRenderTarget.width,
-      height: liveRenderTarget.height,
-      cssWidth: liveRenderTarget.style.width,
-      cssHeight: liveRenderTarget.style.height,
+      width: canvas.width,
+      height: canvas.height,
+      wrapperClientWidth: wrapper.clientWidth,
+      wrapperClientHeight: wrapper.clientHeight,
       devicePixelRatio: dpr,
+      aspect,
     });
 
     console.log("Lens loaded and applied.");

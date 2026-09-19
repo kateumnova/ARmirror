@@ -17,11 +17,31 @@
         background: #000;
       }
 
+      /*
+        Wrapper is slightly wider than the viewport so we can crop
+        the clamped edges. Only the central part is visible.
+      */
+      #canvasWrapper {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        /* 4% extra width total → ~2% cropped on each side */
+        width: 104vw;
+        height: 104vh;
+        transform: translate(-50%, -50%);
+        overflow: hidden;
+        z-index: 1;
+      }
+
+      /*
+        Canvas fills the wrapper. Camera Kit renders at the buffer size
+        corresponding to this element. The wrapper's overflow:hidden
+        crops the clamped edges.
+      */
       #canvas {
         display: block;
-        width: 100vw;
-        height: 100vh;
-        z-index: 1;
+        width: 100%;
+        height: 100%;
       }
 
       /*
@@ -121,8 +141,10 @@
   </head>
 
   <body>
-    <!-- Camera Kit renders the AR mirror into this canvas. -->
-    <canvas id="canvas"></canvas>
+    <!-- Wrapper that provides overscan and crops the clamped edges -->
+    <div id="canvasWrapper">
+      <canvas id="canvas"></canvas>
+    </div>
 
     <!--
       Privacy/help UI disabled for the exhibition kiosk.
