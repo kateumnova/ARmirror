@@ -1,6 +1,10 @@
-// Safari crisp candidate version
+// Crisp version + mirrored camera + fixed crop (lens text NOT mirrored)
 
-import { bootstrapCameraKit } from "@snap/camera-kit";
+import {
+  bootstrapCameraKit,
+  createMediaStreamSource,
+  Transform2D,
+} from "@snap/camera-kit";
 import { privacyText } from "./privacy-text.ts";
 
 (async function () {
@@ -18,18 +22,18 @@ import { privacyText } from "./privacy-text.ts";
       throw new Error('Missing <canvas id="canvas"> in index.html.');
     }
 
-    // Set the Retina canvas buffer once, before Camera Kit owns this canvas.
+    // Retina canvas: set once, before Camera Kit takes ownership.
     const dpr = window.devicePixelRatio || 1;
     liveRenderTarget.width = Math.round(window.innerWidth * dpr);
     liveRenderTarget.height = Math.round(window.innerHeight * dpr);
 
-    // CSS controls visible display size. Do not resize the canvas later.
+    // CSS controls display size; do not change .width/.height later.
     liveRenderTarget.style.width = "100vw";
     liveRenderTarget.style.height = "100vh";
 
     const session = await cameraKit.createSession({ liveRenderTarget });
 
-    // Keep these as "ideal": Safari can choose the best supported mode.
+    // Get camera stream as in your working version.
     const mediaStream = await navigator.mediaDevices.getUserMedia({
       video: {
         width: { ideal: 1920 },
@@ -39,7 +43,24 @@ import { privacyText } from "./privacy-text.ts";
       audio: false,
     });
 
-    // Logs only; it cannot affect video or Camera Kit quality.
+    // Wrap the MediaStream in a CameraKitSource with:
+    // - horizontal mirror (camera only),
+    // - explicit user camera type for correct aspect/crop.
+    const source = createMediaStreamSource(mediaStream, {
+      transform: Transform2D.MirrorX,
+      cameraType: "user",
+    });
+
+    await session.setSource(source);
+    await session.play();
+
+    const lens = await cameraKit.lensRepository.loadLens(
+      "419e266d-7666-4622-af8e-15d392d478d0",
+      "4420b795-87ac-48d9-8dad-ad0416ec12c1"
+    );
+
+    await session.applyLens(lens);
+
     const track = mediaStream.getVideoTracks()[0];
     console.log("Camera settings:", track.getSettings());
     console.log("Canvas buffer:", {
@@ -49,16 +70,6 @@ import { privacyText } from "./privacy-text.ts";
       cssHeight: liveRenderTarget.style.height,
       devicePixelRatio: dpr,
     });
-
-    await session.setSource(mediaStream);
-    await session.play();
-
-    const lens = await cameraKit.lensRepository.loadLens(
-      "419e266d-7666-4622-af8e-15d392d478d0",
-      "4420b795-87ac-48d9-8dad-ad0416ec12c1"
-    );
-
-    await session.applyLens(lens);
 
     console.log("Lens loaded and applied.");
   } catch (error) {
@@ -71,7 +82,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("helpButton");
   const close = document.getElementById("closeBtn");
 
-  // Correct syntax: all three elements must exist.
   if (!popup || !btn || !close) return;
 
   const textDiv = document.querySelector(".popup-text") as HTMLElement | null;
