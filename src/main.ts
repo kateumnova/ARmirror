@@ -22,6 +22,8 @@ import { privacyText } from "./privacy-text.ts";
     }
 
     // Use the wrapper's size for the canvas buffer (includes overscan).
+    // This ensures Camera Kit renders at the larger size; the wrapper then
+    // crops the edges so the clamped strip is not visible.
     const dpr = window.devicePixelRatio || 1;
     const bufferWidth = Math.round(wrapper.clientWidth * dpr);
     const bufferHeight = Math.round(wrapper.clientHeight * dpr);
@@ -29,9 +31,13 @@ import { privacyText } from "./privacy-text.ts";
     canvas.width = bufferWidth;
     canvas.height = bufferHeight;
 
-    // Canvas fills the wrapper via CSS; do not change .width/.height later.
+    // CSS controls visible display size. Do not change .width/.height later.
+    // The canvas fills the wrapper; the wrapper is centered and slightly
+    // larger than the viewport to hide the right-edge clamp.
+
     const session = await cameraKit.createSession({ liveRenderTarget: canvas });
 
+    // Keep these as "ideal": Safari can choose the best supported mode.
     const aspect = bufferWidth / bufferHeight;
 
     const mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -44,21 +50,7 @@ import { privacyText } from "./privacy-text.ts";
       audio: false,
     });
 
-    const source = createMediaStreamSource(mediaStream, {
-      transform: Transform2D.MirrorX,
-      cameraType: "user",
-    });
-
-    await session.setSource(source);
-    await session.play();
-
-    const lens = await cameraKit.lensRepository.loadLens(
-      "419e266d-7666-4622-af8e-15d392d478d0",
-      "4420b795-87ac-48d9-8dad-ad0416ec12c1"
-    );
-
-    await session.applyLens(lens);
-
+    // Logs only; it cannot affect video or Camera Kit quality.
     const track = mediaStream.getVideoTracks()[0];
     console.log("Camera settings:", track.getSettings());
     console.log("Canvas buffer:", {
@@ -69,6 +61,26 @@ import { privacyText } from "./privacy-text.ts";
       devicePixelRatio: dpr,
       aspect,
     });
+
+    // Wrap the MediaStream in a CameraKitSource with:
+    // - horizontal mirror (camera only),
+    // - explicit user camera type for correct aspect/crop handling.
+    const source = createMediaStreamSource(mediaStream, {
+      transform: Transform2D.MirrorX,
+      cameraType: "user",
+    });
+
+    await session.setSource(source);
+    await session.play();
+
+    // Lens ID and Lens Group ID: My Lenses > Lens Scheduler.
+    // First value: Lens ID. Second value: Lens Group ID.
+    const lens = await cameraKit.lensRepository.loadLens(
+      "97b328d6-4d95-4df8-964a-df43fe4f8e94", // Lens ID
+      "0a6f9d65-7013-4e67-93f8-a06e63203104"  // Lens Group ID
+    );
+
+    await session.applyLens(lens);
 
     console.log("Lens loaded and applied.");
   } catch (error) {
@@ -81,6 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("helpButton");
   const close = document.getElementById("closeBtn");
 
+  // Correct syntax: all three elements must exist.
   if (!popup || !btn || !close) return;
 
   const textDiv = document.querySelector(".popup-text") as HTMLElement | null;
