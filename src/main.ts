@@ -76,7 +76,7 @@ import { privacyText } from "./privacy-text.ts";
     // Lens ID and Lens Group ID: My Lenses > Lens Scheduler.
     // First value: Lens ID. Second value: Lens Group ID.
     const lens = await cameraKit.lensRepository.loadLens(
-      "27b216e2-e165-402a-988d-4b380649a337", // Lens ID
+      "1d5529b4-883a-4957-9be1-0cf8150fd858", // Lens ID
       "0a6f9d65-7013-4e67-93f8-a06e63203104"  // Lens Group ID
     );
 
