@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ARmirror</title>
+
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+      }
+
+      /*
+        Wrapper is slightly wider than the viewport so we can crop
+        the clamped edges. Only the central part is visible.
+      */
+      #canvasWrapper {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        /* 4% extra width total → ~2% cropped on each side */
+        width: 104vw;
+        height: 104vh;
+        transform: translate(-50%, -50%);
+        overflow: hidden;
+        z-index: 1;
+      }
+
+      /*
+        Canvas fills the wrapper. Camera Kit renders at the buffer size
+        corresponding to this element. The wrapper's overflow:hidden
+        crops the clamped edges.
+      */
+      #canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      /*
+        Privacy/help button styles retained but inactive because the matching
+        HTML below is commented out for kiosk mode.
+      */
+      .help-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        background: rgb(255, 255, 255);
+        z-index: 9999;
+        border: none;
+        border-radius: 50%;
+        font-size: 24px;
+        font-weight: bold;
+        color: #505050;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /*
+        Privacy popup styles retained but inactive because the matching
+        HTML below is commented out for kiosk mode.
+      */
+      .popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.6);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1vh;
+      }
+
+      .popup.hidden {
+        display: none;
+      }
+
+      .popup-content {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 12px;
+        width: 100%;
+        max-width: 90vw;
+        max-height: 80vh;
+        padding: 2rem;
+        position: relative;
+        overflow-y: auto;
+        backdrop-filter: blur(10px);
+      }
+
+      .close-btn {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        background: none;
+        border: none;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        color: #666;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+      }
+
+      .close-btn:hover {
+        background: rgb(182, 182, 182);
+        color: #000;
+      }
+    </style>
+
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self';
+        script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' https://cf-st.sc-cdn.net https://bolt-gcdn.sc-cdn.net blob:;
+        connect-src 'self' https://*.snapar.com https://cf-st.sc-cdn.net https://bolt-gcdn.sc-cdn.net https://*.snapchat.com;
+        img-src 'self' https:;
+        style-src 'self' 'unsafe-inline';
+        media-src 'self' blob: https:;
+        worker-src 'self' blob: https://cf-st.sc-cdn.net https://bolt-gcdn.sc-cdn.net;
+      "
+    />
+  </head>
+
+  <body>
+    <!-- Wrapper that provides overscan and crops the clamped edges -->
+    <div id="canvasWrapper">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <!--
+      Privacy/help UI disabled for the exhibition kiosk.
+
+      <button
+        id="helpButton"
+        class="help-button"
+        type="button"
+        aria-label="Open privacy policy"
+      >
+        ?
+      </button>
+
+      <div id="helpPopup" class="popup hidden">
+        <div class="popup-content">
+          <button
+            id="closeBtn"
+            class="close-btn"
+            type="button"
+            aria-label="Close privacy policy"
+          >
+            &times;
+          </button>
+
+          <div class="popup-text">
+            Your help/instruction text here
+          </div>
+        </div>
+      </div>
+    -->
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
